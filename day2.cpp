@@ -19,7 +19,7 @@ public:
     void SetMax(int _max) { m_max = _max; }
     void SetLetter(char _letter) { m_letter = _letter; }
     void SetPassword(std::string _password) { m_pass = _password; }
-    bool IsValid() const
+    bool IsValid() const //For first half
     {
         int matches = 0;
         //Loop over string
@@ -34,6 +34,14 @@ public:
         else
             return false;
     }
+    bool IsValid2() const //For second half
+    {
+        if ((m_pass[m_min - 1] == m_letter) != (m_pass[m_max - 1] == m_letter))
+        {
+            return true;
+        }
+        return false;
+    }
 };
 
 int CheckCorrect(std::vector<Password> const &values)
@@ -42,6 +50,17 @@ int CheckCorrect(std::vector<Password> const &values)
     for (auto pass = values.begin(); pass != values.end(); ++pass)
     {
         correct += (int)pass->IsValid();
+    }
+
+    return correct;
+}
+
+int CheckCorrect2(std::vector<Password> const &values)
+{
+    int correct = 0;
+    for (auto pass = values.begin(); pass != values.end(); ++pass)
+    {
+        correct += (int)pass->IsValid2();
     }
 
     return correct;
@@ -82,6 +101,8 @@ int main()
 {
     std::vector<Password> values = ReadPasswords("C:\\Users\\alex1\\git\\AdventOfCode\\day2\\input.txt");
     int correct = CheckCorrect(values);
+    int correct2 = CheckCorrect2(values);
     std::cout << "Result: " << correct << std::endl;
+    std::cout << "Result2: " << correct2 << std::endl;
     return 0;
 }
