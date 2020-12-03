@@ -7,6 +7,7 @@ enable_testing()
 add_executable(day1 day1.cpp)
 
 include_directories("./include/")
+set_property(TARGET day1 PROPERTY CXX_STANDARD 20)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
