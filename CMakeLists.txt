@@ -10,11 +10,13 @@ add_executable(day1 day1.cpp)
 add_executable(day2 day2.cpp)
 add_executable(day3 day3.cpp)
 add_executable(day4 day4.cpp)
+add_executable(day5 day5.cpp)
 
 set_property(TARGET day1 PROPERTY CXX_STANDARD 20)
 set_property(TARGET day2 PROPERTY CXX_STANDARD 20)
 set_property(TARGET day3 PROPERTY CXX_STANDARD 20)
 set_property(TARGET day4 PROPERTY CXX_STANDARD 20)
+set_property(TARGET day5 PROPERTY CXX_STANDARD 20)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
