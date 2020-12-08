@@ -1,4 +1,4 @@
-//To solve day 6 puzzle
+//To solve day 7 puzzle
 #include <iostream>
 #include <fstream>
 #include <string>
