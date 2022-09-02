@@ -1,16 +1,8 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <numeric>
-#include <algorithm>
 #include <string>
 
 #include "year.h"
 #include "day.h"
-#include "CSubmarinePosition.h"
-#include "CMovement.h"
-
-#include "FileUtils.h"
 
 namespace
 {
@@ -39,20 +31,12 @@ namespace
 
 int Part1( const std::string& aFileName )
 {
-	const auto& movements = CreateVectorFromFile<CMovement>( aFileName );
-	CSubmarinePosition submarinePosition;
-	for( const auto& movement : movements )
-		submarinePosition.Move( movement );
-	return submarinePosition.GetPosition().first * submarinePosition.GetPosition().second;
+	return 0;
 }
 
 int Part2( const std::string& aFileName )
 {
-	const auto& movements = CreateVectorFromFile<CMovement>( aFileName );
-	CSubmarinePosition submarinePosition;
-	for( const auto& movement : movements )
-		submarinePosition.MoveWithAim( movement );
-	return submarinePosition.GetPosition().first * submarinePosition.GetPosition().second;
+	return 0;
 }
 
 }

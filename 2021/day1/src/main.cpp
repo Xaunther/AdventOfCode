@@ -3,18 +3,21 @@
 #include <algorithm>
 #include <string>
 
+#include "year.h"
+#include "day.h"
 #include "FileUtils.h"
 
 namespace
 {
 
-static const std::string INPUT_FILE_NAME = "../../../../2021/day1/input.txt";
-static const std::string EXAMPLE_FILE_NAME = "../../../../2021/day1/example.txt";
+using namespace std::literals;
+
+static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
+static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
 std::vector<int> IncreaseVector( const std::vector<int>& aVector );
 std::vector<int> ThreeSumVector( const std::vector<int>& aVector );
 unsigned int Part1( const std::string& aFileName );
 unsigned int Part2( const std::string& aFileName );
-int main();
 
 }
 
