@@ -69,12 +69,12 @@ std::pair<bool, int> GetAccBeforeLoopOrEnd( Instructions instructions )
             break;
         }
         //Check if we actually reached the end
-        if( i == instructions.size() && i == j + 1 )
+        if( static_cast< unsigned int >( i ) == instructions.size() && i == j + 1 )
         {
             return { true, accumulator };
         }
         //Check if we are within bounds
-        if( i < 0 || i >= instructions.size() )
+        if( i < 0 || static_cast< unsigned int >( i ) >= instructions.size() )
             return { false, accumulator };
     }
     return { false, accumulator };

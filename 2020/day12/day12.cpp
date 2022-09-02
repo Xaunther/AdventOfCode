@@ -4,8 +4,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
-#define pi acos(-1)
+#define pi std::acos(-1)
 //3 types of instructions
 enum class ActionType
 {
@@ -18,9 +19,9 @@ enum class ActionType
     F = 0,
 };
 
-ActionType CharToActionType(char const s)
+ActionType CharToActionType( char const s )
 {
-    switch (s)
+    switch( s )
     {
     case 'N':
         return ActionType::N;
@@ -60,52 +61,52 @@ private:
     std::pair<int, int> m_waypoint;
 
 public:
-    Ship() : m_coordinates({0, 0}), m_direction(0), m_waypoint{10, 1} {}
-    void Perform(ActionList const &actions, bool const use_waypoint);
-    void Perform(Action const &action, bool const use_waypoint);
-    void Rotate(int const degrees, bool const use_waypoint);
-    void Propel(int const distance, bool const use_waypoint);
-    void Propel(int const distance, int const direction, bool const use_waypoint);
-    unsigned int ManhattanDistance() const { return abs(m_coordinates.first) + abs(m_coordinates.second); }
+    Ship() : m_coordinates( { 0, 0 } ), m_direction( 0 ), m_waypoint{ 10, 1 } {}
+    void Perform( ActionList const& actions, bool const use_waypoint );
+    void Perform( Action const& action, bool const use_waypoint );
+    void Rotate( int const degrees, bool const use_waypoint );
+    void Propel( int const distance, bool const use_waypoint );
+    void Propel( int const distance, int const direction, bool const use_waypoint );
+    unsigned int ManhattanDistance() const { return abs( m_coordinates.first ) + abs( m_coordinates.second ); }
 };
 
-void Ship::Perform(ActionList const &actions, bool const use_waypoint)
+void Ship::Perform( ActionList const& actions, bool const use_waypoint )
 {
-    for (auto action : actions)
+    for( auto action : actions )
     {
-        Perform(action, use_waypoint);
+        Perform( action, use_waypoint );
         //std::cout << m_coordinates.first << ", " << m_coordinates.second << ", " << m_direction << std::endl;
     }
 }
-void Ship::Perform(Action const &action, bool const use_waypoint)
+void Ship::Perform( Action const& action, bool const use_waypoint )
 {
-    if (action.first == ActionType::F) //Forward
-        Propel(action.second, use_waypoint);
-    else if ((int)action.first % 90 == 0) //Propelling
-        Propel(action.second, (int)action.first, use_waypoint);
+    if( action.first == ActionType::F ) //Forward
+        Propel( action.second, use_waypoint );
+    else if( ( int )action.first % 90 == 0 ) //Propelling
+        Propel( action.second, ( int )action.first, use_waypoint );
     else //Rotating
-        Rotate(action.second * (int)action.first, use_waypoint);
+        Rotate( action.second * ( int )action.first, use_waypoint );
 }
 
-void Ship::Rotate(int const degrees, bool const use_waypoint)
+void Ship::Rotate( int const degrees, bool const use_waypoint )
 {
-    if (!use_waypoint) //Rotate ship
-        m_direction = (m_direction + degrees) % 360;
+    if( !use_waypoint ) //Rotate ship
+        m_direction = ( m_direction + degrees ) % 360;
     else //Rotate waypoint
     {
         std::pair<int, int> _temp;
-        _temp.first = m_waypoint.first * int(cos(double(degrees) / 360.0 * 2 * pi)) - m_waypoint.second * int(sin(double(degrees) / 360.0 * 2 * pi));
-        _temp.second = m_waypoint.second * int(cos(double(degrees) / 360.0 * 2 * pi)) + m_waypoint.first * int(sin(double(degrees) / 360.0 * 2 * pi));
+        _temp.first = m_waypoint.first * int( cos( double( degrees ) / 360.0 * 2 * pi ) ) - m_waypoint.second * int( sin( double( degrees ) / 360.0 * 2 * pi ) );
+        _temp.second = m_waypoint.second * int( cos( double( degrees ) / 360.0 * 2 * pi ) ) + m_waypoint.first * int( sin( double( degrees ) / 360.0 * 2 * pi ) );
         m_waypoint = _temp;
     }
 }
 
-void Ship::Propel(int const distance, bool const use_waypoint)
+void Ship::Propel( int const distance, bool const use_waypoint )
 {
-    if (!use_waypoint) //Propel ship
+    if( !use_waypoint ) //Propel ship
     {
-        m_coordinates.first += distance * int(cos(double(m_direction) / 360.0 * 2 * pi));
-        m_coordinates.second += distance * int(sin(double(m_direction) / 360.0 * 2 * pi));
+        m_coordinates.first += distance * int( cos( double( m_direction ) / 360.0 * 2 * pi ) );
+        m_coordinates.second += distance * int( sin( double( m_direction ) / 360.0 * 2 * pi ) );
     }
     else //Propel to waypoint
     {
@@ -114,33 +115,33 @@ void Ship::Propel(int const distance, bool const use_waypoint)
     }
 }
 
-void Ship::Propel(int const distance, int const direction, bool const use_waypoint)
+void Ship::Propel( int const distance, int const direction, bool const use_waypoint )
 {
-    if (!use_waypoint) //Propel ship
+    if( !use_waypoint ) //Propel ship
     {
-        m_coordinates.first += distance * int(cos(double(direction) / 360.0 * 2 * pi));
-        m_coordinates.second += distance * int(sin(double(direction) / 360.0 * 2 * pi));
+        m_coordinates.first += distance * int( cos( double( direction ) / 360.0 * 2 * pi ) );
+        m_coordinates.second += distance * int( sin( double( direction ) / 360.0 * 2 * pi ) );
     }
     else //Move waypoint
     {
-        m_waypoint.first += distance * int(cos(double(direction) / 360.0 * 2 * pi));
-        m_waypoint.second += distance * int(sin(double(direction) / 360.0 * 2 * pi));
+        m_waypoint.first += distance * int( cos( double( direction ) / 360.0 * 2 * pi ) );
+        m_waypoint.second += distance * int( sin( double( direction ) / 360.0 * 2 * pi ) );
     }
 }
 
-ActionList ReadActions(std::string filename)
+ActionList ReadActions( std::string filename )
 {
     ActionList actions;
     std::ifstream infile;
-    infile.open(filename.c_str());
-    if (infile.is_open())
+    infile.open( filename.c_str() );
+    if( infile.is_open() )
     {
-        while (!infile.eof())
+        while( !infile.eof() )
         {
             //Reading is quite easy
             std::string input_thing;
             infile >> input_thing;
-            actions.push_back({CharToActionType(input_thing[0]), stoi(input_thing.substr(1))});
+            actions.push_back( { CharToActionType( input_thing[ 0 ] ), stoi( input_thing.substr( 1 ) ) } );
         }
     }
     return actions;
@@ -150,9 +151,9 @@ ActionList ReadActions(std::string filename)
 int main()
 {
     Ship ship, ship2;
-    ActionList actions = ReadActions("C:\\Users\\alex1\\git\\AdventOfCode\\day12\\input.txt");
-    ship.Perform(actions, false);
-    ship2.Perform(actions, true);
+    ActionList actions = ReadActions( "C:\\Users\\alex1\\git\\AdventOfCode\\day12\\input.txt" );
+    ship.Perform( actions, false );
+    ship2.Perform( actions, true );
 
     unsigned int result = ship.ManhattanDistance();
     unsigned int result2 = ship2.ManhattanDistance();

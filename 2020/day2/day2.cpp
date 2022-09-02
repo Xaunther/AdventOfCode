@@ -15,28 +15,28 @@ private:
 
     //In/out functions
 public:
-    void SetMin(int _min) { m_min = _min; }
-    void SetMax(int _max) { m_max = _max; }
-    void SetLetter(char _letter) { m_letter = _letter; }
-    void SetPassword(std::string _password) { m_pass = _password; }
+    void SetMin( int _min ) { m_min = _min; }
+    void SetMax( int _max ) { m_max = _max; }
+    void SetLetter( char _letter ) { m_letter = _letter; }
+    void SetPassword( std::string _password ) { m_pass = _password; }
     bool IsValid() const //For first half
     {
         int matches = 0;
         //Loop over string
-        for (int i = 0; i < m_pass.size(); i++)
+        for( unsigned int i = 0; i < m_pass.size(); i++ )
         {
-            if (m_pass[i] == m_letter)
+            if( m_pass[ i ] == m_letter )
                 matches++;
         }
         //See if it meets the requirements
-        if (matches >= m_min && matches <= m_max)
+        if( matches >= m_min && matches <= m_max )
             return true;
         else
             return false;
     }
     bool IsValid2() const //For second half
     {
-        if ((m_pass[m_min - 1] == m_letter) != (m_pass[m_max - 1] == m_letter))
+        if( ( m_pass[ m_min - 1 ] == m_letter ) != ( m_pass[ m_max - 1 ] == m_letter ) )
         {
             return true;
         }
@@ -44,53 +44,53 @@ public:
     }
 };
 
-int CheckCorrect(std::vector<Password> const &values)
+int CheckCorrect( std::vector<Password> const& values )
 {
     int correct = 0;
-    for (auto pass = values.begin(); pass != values.end(); ++pass)
+    for( auto pass = values.begin(); pass != values.end(); ++pass )
     {
-        correct += (int)pass->IsValid();
+        correct += ( int )pass->IsValid();
     }
 
     return correct;
 }
 
-int CheckCorrect2(std::vector<Password> const &values)
+int CheckCorrect2( std::vector<Password> const& values )
 {
     int correct = 0;
-    for (auto pass = values.begin(); pass != values.end(); ++pass)
+    for( auto pass = values.begin(); pass != values.end(); ++pass )
     {
-        correct += (int)pass->IsValid2();
+        correct += ( int )pass->IsValid2();
     }
 
     return correct;
 }
 
-std::vector<Password> ReadPasswords(std::string filename)
+std::vector<Password> ReadPasswords( std::string filename )
 {
     std::vector<Password> readlist;
     std::ifstream infile;
-    infile.open(filename.c_str());
-    if (infile.is_open())
+    infile.open( filename.c_str() );
+    if( infile.is_open() )
     {
-        while (!infile.eof())
+        while( !infile.eof() )
         {
             //3 columns to fill
             Password pass;
             std::string input_thing;
             //Min-max
             infile >> input_thing;
-            pass.SetMin(stoi(input_thing.substr(0, input_thing.find('-'))));
-            pass.SetMax(stoi(input_thing.substr(input_thing.find('-') + 1)));
+            pass.SetMin( stoi( input_thing.substr( 0, input_thing.find( '-' ) ) ) );
+            pass.SetMax( stoi( input_thing.substr( input_thing.find( '-' ) + 1 ) ) );
             //Character
             infile >> input_thing;
-            pass.SetLetter(input_thing[0]);
+            pass.SetLetter( input_thing[ 0 ] );
             //Password
             infile >> input_thing;
-            pass.SetPassword(input_thing);
+            pass.SetPassword( input_thing );
 
             //Append
-            readlist.push_back(pass);
+            readlist.push_back( pass );
         }
     }
     return readlist;
@@ -99,9 +99,9 @@ std::vector<Password> ReadPasswords(std::string filename)
 //Main function
 int main()
 {
-    std::vector<Password> values = ReadPasswords("C:\\Users\\alex1\\git\\AdventOfCode\\day2\\input.txt");
-    int correct = CheckCorrect(values);
-    int correct2 = CheckCorrect2(values);
+    std::vector<Password> values = ReadPasswords( "C:\\Users\\alex1\\git\\AdventOfCode\\day2\\input.txt" );
+    int correct = CheckCorrect( values );
+    int correct2 = CheckCorrect2( values );
     std::cout << "Result: " << correct << std::endl;
     std::cout << "Result2: " << correct2 << std::endl;
     return 0;

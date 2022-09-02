@@ -42,7 +42,7 @@ public:
     Camera( size_t rows, size_t cols )
     {
         m_square.resize( rows );
-        for( int i = 0; i < rows; i++ )
+        for( unsigned int i = 0; i < rows; i++ )
         {
             m_square[ i ].resize( cols );
         }
@@ -175,9 +175,9 @@ void Camera::Rotate( Rotation const orientation )
     Square new_square = m_square;
     if( orientation == Rotation::clockwise )
     {
-        for( auto i = 0; i < m_square.size(); i++ )
+        for( unsigned int i = 0; i < m_square.size(); i++ )
         {
-            for( auto j = 0; j < m_square[ i ].size(); j++ )
+            for( unsigned int j = 0; j < m_square[ i ].size(); j++ )
             {
                 new_square[ j ][ m_square.size() - 1 - i ] = m_square[ i ][ j ];
             }
@@ -185,9 +185,9 @@ void Camera::Rotate( Rotation const orientation )
     }
     else
     {
-        for( auto i = 0; i < m_square.size(); i++ )
+        for( unsigned int i = 0; i < m_square.size(); i++ )
         {
-            for( auto j = 0; j < m_square[ i ].size(); j++ )
+            for( unsigned int j = 0; j < m_square[ i ].size(); j++ )
             {
                 new_square[ m_square.size() - 1 - j ][ i ] = m_square[ i ][ j ];
             }
@@ -199,9 +199,9 @@ void Camera::Rotate( Rotation const orientation )
 void Camera::Flip()
 {
     Square new_square = m_square;
-    for( auto i = 0; i < m_square.size(); i++ )
+    for( unsigned int i = 0; i < m_square.size(); i++ )
     {
-        for( auto j = 0; j < m_square[ i ].size(); j++ )
+        for( unsigned int j = 0; j < m_square[ i ].size(); j++ )
         {
             new_square[ i ][ m_square.size() - 1 - j ] = m_square[ i ][ j ];
         }
@@ -451,13 +451,13 @@ BigCamera MergeCameras( std::vector<Camera> cameras )
     //Get side length of the square and resize camera square
     uint64_t length = uint64_t( sqrt( cameras.size() ) );
     bigcamera.m_cameras.resize( length );
-    for( int i = 0; i < length; i++ )
+    for( uint64_t i = 0; i < length; i++ )
         bigcamera.m_cameras[ i ].resize( length );
 
     //Fill the big square
-    for( int i = 0; i < length; i++ )
+    for( uint64_t i = 0; i < length; i++ )
     {
-        for( int j = 0; j < length; j++ )
+        for( uint64_t j = 0; j < length; j++ )
         {
             //std::cout << length << i << j << std::endl;
             //First corner. Just get a corner
