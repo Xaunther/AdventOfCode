@@ -1,3 +1,4 @@
 include_directories("include")
 
-add_executable(day1_21 day1/main.cpp)
+add_subdirectory(day1)
+add_subdirectory(day2)

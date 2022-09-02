@@ -8,8 +8,8 @@
 namespace
 {
 
-static const std::string INPUT_FILE_NAME = "../../../2021/day1/input.txt";
-static const std::string EXAMPLE_FILE_NAME = "../../../2021/day1/example.txt";
+static const std::string INPUT_FILE_NAME = "../../../../2021/day1/input.txt";
+static const std::string EXAMPLE_FILE_NAME = "../../../../2021/day1/example.txt";
 std::vector<int> IncreaseVector( const std::vector<int>& aVector );
 std::vector<int> ThreeSumVector( const std::vector<int>& aVector );
 unsigned int Part1( const std::string& aFileName );
