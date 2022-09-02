@@ -9,3 +9,4 @@ else()
 endif()
 
 add_subdirectory(2020)
+add_subdirectory(2021)
