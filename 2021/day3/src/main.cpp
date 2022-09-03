@@ -4,6 +4,9 @@
 #include "year.h"
 #include "day.h"
 
+#include "CBinary.h"
+#include "FileUtils.h"
+
 namespace
 {
 
@@ -12,8 +15,8 @@ using namespace std::literals;
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
 
-int Part1( const std::string& aFileName );
-int Part2( const std::string& aFileName );
+unsigned long Part1( const std::string& aFileName );
+unsigned long Part2( const std::string& aFileName );
 
 }
 
@@ -29,12 +32,17 @@ int main()
 namespace
 {
 
-int Part1( const std::string& aFileName )
+unsigned long Part1( const std::string& aFileName )
 {
-	return 0;
+	const auto& binaries = CreateVectorFromFile<CBinary>( aFileName );
+	std::vector<unsigned int> sumVector( binaries.front().GetBinaryNumber().size() );
+	for( const auto& binary : binaries )
+		for( size_t index = 0;index < binary.GetBinaryNumber().size(); ++index )
+			sumVector[ index ] += static_cast< unsigned int >( binary.GetBinaryNumber()[ index ] );
+	return CBinary{ sumVector, binaries.size(), CBinary::E_RATE::GAMMA }.CalculateDecimalNumber() * CBinary { sumVector, binaries.size(), CBinary::E_RATE::EPSILON }.CalculateDecimalNumber();
 }
 
-int Part2( const std::string& aFileName )
+unsigned long Part2( const std::string& aFileName )
 {
 	return 0;
 }
