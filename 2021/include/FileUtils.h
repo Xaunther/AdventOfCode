@@ -7,6 +7,7 @@
 #include <list>
 
 template<typename T> T CreateContainerFromFile( const std::string& aFileName );
+template<typename T> T CreateFromFile( const std::string& aFileName );
 template<typename T> typename std::vector<T> CreateVectorFromFile( const std::string& aFileName );
 template<typename T> typename std::list<T> CreateListFromFile( const std::string& aFileName );
 
@@ -22,6 +23,19 @@ template<typename T> T CreateContainerFromFile( const std::string& aFileName )
 		while( infile >> input )
 			result.emplace_back( std::move( input ) );
 	}
+	infile.close();
+
+	return result;
+}
+
+template<typename T> T CreateFromFile( const std::string& aFileName )
+{
+	T result;
+
+	std::ifstream infile;
+	infile.open( aFileName );
+	if( infile )
+		infile >> result;
 	infile.close();
 
 	return result;

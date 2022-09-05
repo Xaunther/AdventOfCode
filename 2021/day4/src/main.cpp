@@ -4,6 +4,9 @@
 #include "year.h"
 #include "day.h"
 
+#include "CBingo.h"
+#include "CBingoState.h"
+
 #include "FileUtils.h"
 
 namespace
@@ -14,8 +17,8 @@ using namespace std::literals;
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
 
-unsigned long Part1( const std::string& aFileName );
-unsigned long Part2( const std::string& aFileName );
+size_t Part1( const std::string& aFileName );
+size_t Part2( const std::string& aFileName );
 
 }
 
@@ -31,14 +34,18 @@ int main()
 namespace
 {
 
-unsigned long Part1( const std::string& aFileName )
+size_t Part1( const std::string& aFileName )
 {
-	return 0;
+	const auto& bingo = CreateFromFile<CBingo>( aFileName );
+	CBingoState bingoState( bingo.GetCards().size() );
+	return bingoState.PlayUntilBingo( bingo );
 }
 
-unsigned long Part2( const std::string& aFileName )
+size_t Part2( const std::string& aFileName )
 {
-	return 0;
+	const auto& bingo = CreateFromFile<CBingo>( aFileName );
+	CBingoState bingoState( bingo.GetCards().size() );
+	return bingoState.PlayUntilLastBingo( bingo );
 }
 
 }
