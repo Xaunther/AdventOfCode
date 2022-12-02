@@ -1,8 +1,13 @@
 #include <iostream>
+#include <list>
+#include <numeric>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+
+#include "CMatch.h"
+#include "CFixedMatch.h"
 
 namespace
 {
@@ -11,8 +16,8 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+unsigned long Part1( const std::string& aFileName );
+unsigned long Part2( const std::string& aFileName );
 
 }
 
@@ -28,14 +33,18 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+unsigned long Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& matches = CreateUnorderedContainerFromFile<std::list<CMatch>>( aFileName );
+	return std::accumulate( matches.cbegin(), matches.cend(), static_cast< unsigned long >( 0 ), []( const auto& aResult, const auto& aMatch )
+		{ return aResult + aMatch.MyScore(); } );
 }
 
-unsigned int Part2( const std::string& aFileName )
+unsigned long Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& matches = CreateUnorderedContainerFromFile<std::list<CFixedMatch>>( aFileName );
+	return std::accumulate( matches.cbegin(), matches.cend(), static_cast< unsigned long >( 0 ), []( const auto& aResult, const auto& aMatch )
+		{ return aResult + aMatch.MyScore(); } );
 }
 
 }
