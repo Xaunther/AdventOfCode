@@ -1,8 +1,12 @@
 #include <iostream>
+#include <list>
+#include <numeric>
+#include <vector>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "CRucksack.h"
 
 namespace
 {
@@ -30,12 +34,18 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& rucksacks = CreateUnorderedContainerFromFile<std::list<CRucksack>>( aFileName );
+	return std::accumulate( rucksacks.cbegin(), rucksacks.cend(), unsigned int{ 0 },
+		[]( const auto& aResult, const auto& CRucksack ) { return aResult + CRucksack.CalculatedRepeatedPriority(); } );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& rucksacks = CreateUnorderedContainerFromFile<std::vector<CRucksack>>( aFileName );
+	unsigned int result{ 0 };
+	for( unsigned int index = 0; index < rucksacks.size(); index += 3 )
+		result += CRucksack::CommonInTrio( rucksacks[ index ], rucksacks[ index + 1 ], rucksacks[ index + 2 ] );
+	return result;
 }
 
 }
