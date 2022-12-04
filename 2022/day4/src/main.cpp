@@ -1,8 +1,13 @@
 #include <iostream>
+#include <list>
+#include <algorithm>
+#include <functional>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+
+#include "CAssignment.h"
 
 namespace
 {
@@ -30,12 +35,14 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& assignments = CreateUnorderedContainerFromFile<std::list<CAssignment>>( aFileName );
+	return static_cast< unsigned int >( std::ranges::count_if( assignments, std::bind( &CAssignment::IsContained, std::placeholders::_1 ) ) );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& assignments = CreateUnorderedContainerFromFile<std::list<CAssignment>>( aFileName );
+	return static_cast< unsigned int >( std::ranges::count_if( assignments, std::bind( &CAssignment::IsOverlapped, std::placeholders::_1 ) ) );
 }
 
 }
