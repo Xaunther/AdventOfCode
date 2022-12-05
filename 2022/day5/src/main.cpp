@@ -1,8 +1,11 @@
 #include <iostream>
+#include <numeric>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+
+#include "CCraneSetup.h"
 
 namespace
 {
@@ -11,8 +14,8 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+std::string Part1( const std::string& aFileName );
+std::string Part2( const std::string& aFileName );
 
 }
 
@@ -28,14 +31,20 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+std::string Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto craneSetup = CreateFromFile<CCraneSetup>( aFileName );
+	craneSetup.ExecuteInstructions9000();
+	return std::accumulate( craneSetup.GetStacks().cbegin(), craneSetup.GetStacks().cend(), std::string{},
+		[]( const auto& aResult, const auto& aStack ) { return aResult + std::string{ aStack.back() }; } );
 }
 
-unsigned int Part2( const std::string& aFileName )
+std::string Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto craneSetup = CreateFromFile<CCraneSetup>( aFileName );
+	craneSetup.ExecuteInstructions9001();
+	return std::accumulate( craneSetup.GetStacks().cbegin(), craneSetup.GetStacks().cend(), std::string{},
+		[]( const auto& aResult, const auto& aStack ) { return aResult + std::string{ aStack.back() }; } );
 }
 
 }
