@@ -3,6 +3,7 @@
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "CSignal.h"
 
 namespace
 {
@@ -30,12 +31,14 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& signal = CreateFromFile<CSignal>( aFileName );
+	return signal.FindStartMarker( 4 );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& signal = CreateFromFile<CSignal>( aFileName );
+	return signal.FindStartMarker( 14 );
 }
 
 }
