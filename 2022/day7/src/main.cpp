@@ -3,6 +3,7 @@
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "CDirectoryTree.h"
 
 namespace
 {
@@ -11,8 +12,8 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+std::size_t Part1( const std::string& aFileName );
+std::size_t Part2( const std::string& aFileName );
 
 }
 
@@ -28,14 +29,20 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+std::size_t Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& directoryTree = CreateFromFile<CDirectoryTree>( aFileName );
+	std::size_t result = 0;
+	directoryTree.SumDirectorySizesAboveThreshold( result, 100000 );
+	return result;
 }
 
-unsigned int Part2( const std::string& aFileName )
+std::size_t Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& directoryTree = CreateFromFile<CDirectoryTree>( aFileName );
+	std::size_t result = 0;
+	directoryTree.SizeOfUpperBoundDirectory( result, 30000000 + directoryTree.SumDirectorySizesAboveThreshold( result, 0 ) - 70000000 );
+	return result;
 }
 
 }
