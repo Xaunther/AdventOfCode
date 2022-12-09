@@ -1,8 +1,13 @@
 #include <iostream>
+#include <list>
+#include <algorithm>
+#include <functional>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+
+#include "CRopePosition.h"
 
 namespace
 {
@@ -30,12 +35,18 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& moves = CreateUnorderedContainerFromFile<std::list<CMove>>( aFileName );
+	CRopePosition ropePosition{ 2 };
+	std::ranges::for_each( moves, [ &ropePosition ]( const auto& aMove ) { ropePosition.Move( aMove ); } );
+	return static_cast< unsigned int >( ropePosition.GetTailHistory().size() );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& moves = CreateUnorderedContainerFromFile<std::list<CMove>>( aFileName );
+	CRopePosition ropePosition{ 10 };
+	std::ranges::for_each( moves, [ &ropePosition ]( const auto& aMove ) { ropePosition.Move( aMove ); } );
+	return static_cast< unsigned int >( ropePosition.GetTailHistory().size() );
 }
 
 }
