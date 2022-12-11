@@ -4,6 +4,8 @@
 #include "day.h"
 #include "FileUtils.h"
 
+#include "CMonkeyPack.h"
+
 namespace
 {
 
@@ -11,8 +13,8 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+std::size_t Part1( const std::string& aFileName );
+std::size_t Part2( const std::string& aFileName );
 
 }
 
@@ -28,14 +30,20 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+std::size_t Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto monkeyPack = CreateFromFile<CMonkeyPack>( aFileName );
+	for( unsigned int i = 0; i < 20; ++i )
+		monkeyPack.PlayTurn( 3 );
+	return monkeyPack.MonkeyBusinessLevel();
 }
 
-unsigned int Part2( const std::string& aFileName )
+std::size_t Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto monkeyPack = CreateFromFile<CMonkeyPack>( aFileName );
+	for( unsigned int i = 0; i < 10000;++i )
+		monkeyPack.PlayTurn( 1 );
+	return monkeyPack.MonkeyBusinessLevel();
 }
 
 }
