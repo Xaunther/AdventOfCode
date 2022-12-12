@@ -13,11 +13,30 @@ std::vector<unsigned int> PossibleDestinations( const unsigned int& aOrigin, con
 
 }
 
-unsigned int CPathFinder::FindShortestPath( const CElevationMap& aMap )
+unsigned int CPathFinder::FindShortestPath( const CElevationMap& aMap, const bool aAnyPath )
 {
-	mPaths = paths( aMap.GetElevation().size(), paths::value_type{} );
-	mPaths[ aMap.GetInitialPosition() ] = 0;
-	mLatestPositions.insert( aMap.GetInitialPosition() );
+	mPaths = paths( aMap.GetElevation().size(), false );
+	if( aAnyPath )
+	{
+		unsigned int index{ 0 };
+		for( const auto& elevation : aMap.GetElevation() )
+		{
+			if( elevation == 'a' )
+			{
+				mPaths[ index ] = true;
+				mLatestPositions.insert( index );
+			}
+			++index;
+		}
+
+	}
+	else
+	{
+		mPaths[ aMap.GetInitialPosition() ] = true;
+		mLatestPositions.insert( aMap.GetInitialPosition() );
+	}
+
+	unsigned int result{ 0 };
 	do
 	{
 		latest_positions newLatestPositions;
@@ -25,13 +44,14 @@ unsigned int CPathFinder::FindShortestPath( const CElevationMap& aMap )
 		{
 			for( const auto& possibleDestination : PossibleDestinations( latestPosition, aMap, mPaths ) )
 			{
-				mPaths[ possibleDestination ] = *mPaths[ latestPosition ] + 1;
+				mPaths[ possibleDestination ] = true;
 				newLatestPositions.insert( possibleDestination );
 			}
 		}
 		mLatestPositions = std::move( newLatestPositions );
+		++result;
 	} while( !mPaths[ aMap.GetEndPosition() ] );
-	return *mPaths[ aMap.GetEndPosition() ];
+	return result;
 }
 
 namespace
