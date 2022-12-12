@@ -4,6 +4,9 @@
 #include "day.h"
 #include "FileUtils.h"
 
+#include "CPathFinder.h"
+#include "CElevationMap.h"
+
 namespace
 {
 
@@ -30,7 +33,8 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& elevationMap = CreateFromFile<CElevationMap>( aFileName );
+	return CPathFinder{}.FindShortestPath( elevationMap );
 }
 
 unsigned int Part2( const std::string& aFileName )
