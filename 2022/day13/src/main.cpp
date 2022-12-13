@@ -1,6 +1,7 @@
 #include <iostream>
+#include <algorithm>
 #include <ranges>
-#include <vector>
+#include <set>
 
 #include "year.h"
 #include "day.h"
@@ -38,16 +39,14 @@ unsigned int Part1( const std::string& aFileName )
 	unsigned int result{ 0 };
 	for( auto signalIt = distressSignals.cbegin(); signalIt != distressSignals.cend(); ++signalIt )
 		if( ( *signalIt ).IsInOrder() )
-		{
 			result += static_cast< unsigned int >( std::distance( distressSignals.cbegin(), signalIt ) + 1 );
-			std::cout << ( std::distance( distressSignals.cbegin(), signalIt ) + 1 ) << std::endl;
-		}
 	return result;
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto packets = CreateOrderedContainerFromFile<std::set<CPacket>>( aFileName );
+	return static_cast< unsigned int >( ( std::distance( packets.cbegin(), packets.emplace( "[[2]]" ).first ) + 1 ) * ( std::distance( packets.cbegin(), packets.emplace( "[[6]]" ).first ) + 1 ) );
 }
 
 }
