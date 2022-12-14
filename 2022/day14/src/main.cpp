@@ -32,13 +32,12 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	auto rockStructure = CreateFromFile<CRockStructure>( aFileName );
-	return static_cast< unsigned int >( rockStructure.FallingSand( 500, 0 ) );
+	return static_cast< unsigned int >( CreateFromFile<CRockStructure>( aFileName ).FallingInfiniteSand( 500, 0 ) );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	return static_cast< unsigned int >( CreateFromFile<CRockStructure>( aFileName ).FallingFiniteSand( 500, 0 ) );
 }
 
 }

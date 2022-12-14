@@ -16,7 +16,8 @@ public:
 	const rocks& GetRocks() const;
 
 	unsigned int CountRocks() const;
-	unsigned int FallingSand( const unsigned short aStartX, const unsigned short aStartY );
+	unsigned int FallingInfiniteSand( const unsigned short aStartX, const unsigned short aStartY );
+	unsigned int FallingFiniteSand( const unsigned short aStartX, const unsigned short aStartY );
 
 private:
 	rocks mRocks;
