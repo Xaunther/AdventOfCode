@@ -4,6 +4,8 @@
 #include "day.h"
 #include "FileUtils.h"
 
+#include "CRockStructure.h"
+
 namespace
 {
 
@@ -30,7 +32,8 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto rockStructure = CreateFromFile<CRockStructure>( aFileName );
+	return static_cast< unsigned int >( rockStructure.FallingSand( 500, 0 ) );
 }
 
 unsigned int Part2( const std::string& aFileName )
