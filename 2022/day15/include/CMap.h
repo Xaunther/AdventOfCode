@@ -1,6 +1,7 @@
 #pragma once
 
 #include <istream>
+#include <list>
 #include <map>
 #include <set>
 
@@ -18,6 +19,10 @@ public:
 	const sensors& GetSensors() const;
 
 	unsigned int CountForbiddenPositions( const int& aRow ) const;
+	std::size_t TuningFrequency( const int& aMaxCoordinate ) const;
+
+private:
+	std::list<coordinates> FindReachedSegments( const int& aRow ) const;
 
 private:
 	beacons mBeacons;

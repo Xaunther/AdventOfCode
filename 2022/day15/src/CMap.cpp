@@ -1,7 +1,6 @@
 #include "CMap.h"
 
 #include <iostream>
-#include <list>
 #include <numeric>
 #include <ranges>
 
@@ -41,17 +40,7 @@ const CMap::sensors& CMap::GetSensors() const
 
 unsigned int CMap::CountForbiddenPositions( const int& aRow ) const
 {
-	std::list<coordinates> rowSegments;
-	for( const auto& sensor : mSensors )
-	{
-		const unsigned int& coveredDistance = ManhattanDistance( sensor );
-		if( static_cast< unsigned int >( std::abs( aRow - sensor.first.second ) ) <= coveredDistance )
-		{
-			const int offset = coveredDistance - std::abs( aRow - sensor.first.second );
-			for( auto& addedSegments : AddedSegments( coordinates{ sensor.first.first - offset, sensor.first.first + offset }, rowSegments ) )
-				rowSegments.emplace_back( std::move( addedSegments ) );
-		}
-	}
+	const auto& rowSegments = FindReachedSegments( aRow );
 	unsigned int result = static_cast< unsigned int >( std::accumulate( rowSegments.cbegin(), rowSegments.cend(), int{ 0 },
 		[]( const unsigned int& aResult, const coordinates& aCoordinates ) { return aResult + aCoordinates.second + 1 - aCoordinates.first; } ) );
 
@@ -67,6 +56,34 @@ unsigned int CMap::CountForbiddenPositions( const int& aRow ) const
 	return result;
 }
 
+std::size_t CMap::TuningFrequency( const int& aMaxCoordinate ) const
+{
+	for( int row = 0; row < aMaxCoordinate; ++row )
+	{
+		auto rowSegments = FindReachedSegments( row );
+		rowSegments.sort();
+		const auto& found = std::ranges::adjacent_find( rowSegments, []( auto&& aLHS, auto&& aRHS ) { return aRHS.first > aLHS.second + 1; } );
+		if( found != rowSegments.cend() )
+			return static_cast< std::size_t >( ( *found ).second + 1 ) * std::size_t{ 4000000 } + static_cast< std::size_t >( row );
+	}
+	return 0;
+}
+
+std::list<CMap::coordinates> CMap::FindReachedSegments( const int& aRow ) const
+{
+	std::list<coordinates> result;
+	for( const auto& sensor : mSensors )
+	{
+		const unsigned int& coveredDistance = ManhattanDistance( sensor );
+		if( static_cast< unsigned int >( std::abs( aRow - sensor.first.second ) ) <= coveredDistance )
+		{
+			const int offset = coveredDistance - std::abs( aRow - sensor.first.second );
+			for( auto& addedSegments : AddedSegments( coordinates{ sensor.first.first - offset, sensor.first.first + offset }, result ) )
+				result.emplace_back( std::move( addedSegments ) );
+		}
+	}
+	return result;
+}
 
 namespace
 {
