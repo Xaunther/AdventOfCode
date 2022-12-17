@@ -34,10 +34,10 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes ) co
 	using opened_valves = std::set<unsigned int>;
 	using current_valve = unsigned int;
 	using score = std::size_t;
-	using state = std::pair<opened_valves, current_valve>;
+	using state = std::pair<current_valve, opened_valves>;
 	const auto startValveIndex = static_cast< unsigned int >( std::distance( mValves.begin(),
 		std::ranges::find_if( mValves, []( auto&& aValve ) { return aValve.GetID() == "AA"; } ) ) );
-	const auto initialState = state{ {}, startValveIndex };
+	const auto initialState = state{ startValveIndex, {} };
 	std::map<state, std::pair<score, score>> result = { { initialState, {0,0} } };
 
 	for( unsigned int minute = 0; minute < aMinutes; ++minute )
@@ -48,25 +48,25 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes ) co
 		auto newResult = result;
 		for( auto& res : result )
 		{
-			if( res.first.first.size() < mCountRelevantValves )
+			if( res.first.second.size() < mCountRelevantValves )
 			{
 				// Consider each possible destination
-				for( const auto& destinationValve : mTargetValvesVector[ res.first.second ] )
+				for( const auto& destinationValve : mTargetValvesVector[ res.first.first ] )
 				{
 					auto newState = res.first;
-					newState.second = destinationValve;
+					newState.first = destinationValve;
 					auto emplaced = newResult.emplace( std::move( newState ), res.second );
 					if( !emplaced.second )
 						if( res.second.first > ( *emplaced.first ).second.first )
 							( *emplaced.first ).second.first = res.second.first;
 				}
 				// Consider opening the current valve
-				if( mValves[ res.first.second ].GetFlowRate() > 0 && !res.first.first.contains( res.first.second ) )
+				if( mValves[ res.first.first ].GetFlowRate() > 0 && !res.first.second.contains( res.first.first ) )
 				{
 					auto newState = res.first;
-					newState.first.insert( res.first.second );
+					newState.second.insert( res.first.first );
 					auto newScore = res.second;
-					newScore.second += mValves[ res.first.second ].GetFlowRate();
+					newScore.second += mValves[ res.first.first ].GetFlowRate();
 					auto emplaced = newResult.emplace( std::move( newState ), newScore );
 					if( !emplaced.second )
 						if( newScore.first > ( *emplaced.first ).second.first )
@@ -76,10 +76,10 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes ) co
 				else
 					newResult.emplace( res );
 			}
-			else if( res.first.second != startValveIndex )
+			else if( res.first.first != startValveIndex )
 			{
 				auto newState = res.first;
-				newState.second = startValveIndex;
+				newState.first = startValveIndex;
 				auto emplaced = newResult.emplace( std::move( newState ), res.second );
 				if( !emplaced.second )
 					if( res.second.first > ( *emplaced.first ).second.first )
