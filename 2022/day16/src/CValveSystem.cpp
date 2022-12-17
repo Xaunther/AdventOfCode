@@ -1,6 +1,7 @@
 #include "CValveSystem.h"
 
 #include <algorithm>
+#include <list>
 #include <map>
 #include <set>
 #include <ranges>
@@ -10,6 +11,9 @@ namespace
 {
 
 CValveSystem::target_valves_vector CreateTargetValvesVector( const CValveSystem::valves& aValves );
+
+using current_valves = std::multiset<unsigned int>;
+std::list<current_valves> DestinationValves( const current_valves& aCurrentValves, const CValveSystem::target_valves_vector& aTargetVakvesVector );
 
 }
 
@@ -29,19 +33,34 @@ const CValveSystem::valves& CValveSystem::GetValves() const
 	return mValves;
 }
 
-std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes ) const
+std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes, const unsigned short& aElephantCount ) const
 {
 	using opened_valves = std::set<unsigned int>;
-	using current_valve = unsigned int;
+	using current_valves = std::multiset<unsigned int>;
 	using score = std::size_t;
-	using state = std::pair<current_valve, opened_valves>;
-	const auto startValveIndex = static_cast< unsigned int >( std::distance( mValves.begin(),
+	using state = std::pair<current_valves, opened_valves>;
+	const auto& startValveIndex = static_cast< unsigned int >( std::distance( mValves.begin(),
 		std::ranges::find_if( mValves, []( auto&& aValve ) { return aValve.GetID() == "AA"; } ) ) );
-	const auto initialState = state{ startValveIndex, {} };
+	current_valves startValveIndexes;
+	for( unsigned short i = 0; i <= aElephantCount;++i )
+		startValveIndexes.insert( startValveIndex );
+	const auto initialState = state{ startValveIndexes, {} };
 	std::map<state, std::pair<score, score>> result = { { initialState, {0,0} } };
 
-	for( unsigned int minute = 0; minute < aMinutes; ++minute )
+	for( unsigned int minute = 0; minute < aMinutes - 4 * aElephantCount; ++minute )
 	{
+		std::cout << minute << std::endl;
+		/*for( const auto& res : result )
+		{
+			std::cout << "Current valves (" << res.first.first.size() << "): ";
+			for( const auto& v : res.first.first )
+				std::cout << v << ", ";
+			std::cout << std::endl << "Open valves: ";
+			for( const auto& v : res.first.second )
+				std::cout << v << ", ";
+			std::cout << std::endl << "Score: " << res.second.first << std::endl;
+			std::cout << "Rate: " << res.second.second << std::endl;
+		}*/
 		// Update release per minute
 		for( auto& res : result )
 			res.second.first += res.second.second;
@@ -51,39 +70,33 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes ) co
 			if( res.first.second.size() < mCountRelevantValves )
 			{
 				// Consider each possible destination
-				for( const auto& destinationValve : mTargetValvesVector[ res.first.first ] )
+				const auto& destinationValvesList = DestinationValves( res.first.first, mTargetValvesVector );
+				for( const auto& destinationValves : destinationValvesList )
 				{
 					auto newState = res.first;
-					newState.first = destinationValve;
-					auto emplaced = newResult.emplace( std::move( newState ), res.second );
-					if( !emplaced.second )
-						if( res.second.first > ( *emplaced.first ).second.first )
-							( *emplaced.first ).second.first = res.second.first;
-				}
-				// Consider opening the current valve
-				if( mValves[ res.first.first ].GetFlowRate() > 0 && !res.first.second.contains( res.first.first ) )
-				{
-					auto newState = res.first;
-					newState.second.insert( res.first.first );
+					newState.first = destinationValves;
 					auto newScore = res.second;
-					newScore.second += mValves[ res.first.first ].GetFlowRate();
+					for( auto destValveIt = destinationValves.cbegin(), initValveIt = res.first.first.cbegin(); destValveIt != destinationValves.cend(); ++destValveIt, ++initValveIt )
+					{
+						const auto& destValve = *destValveIt;
+						if( destValve == *initValveIt && mValves[ destValve ].GetFlowRate() > 0 && !res.first.second.contains( destValve ) )
+						{
+							newState.second.insert( destValve );
+							newScore.second += mValves[ destValve ].GetFlowRate();
+						}
+					}
 					auto emplaced = newResult.emplace( std::move( newState ), newScore );
-					if( !emplaced.second )
-						if( newScore.first > ( *emplaced.first ).second.first )
-							( *emplaced.first ).second.first = newScore.first;
+					if( !emplaced.second && res.second.first > ( *emplaced.first ).second.first )
+						( *emplaced.first ).second.first = res.second.first;
 				}
-				// Sit
-				else
-					newResult.emplace( res );
 			}
-			else if( res.first.first != startValveIndex )
+			else if( res.first.first != startValveIndexes )
 			{
 				auto newState = res.first;
-				newState.first = startValveIndex;
+				newState.first = startValveIndexes;
 				auto emplaced = newResult.emplace( std::move( newState ), res.second );
-				if( !emplaced.second )
-					if( res.second.first > ( *emplaced.first ).second.first )
-						( *emplaced.first ).second.first = res.second.first;
+				if( !emplaced.second && res.second.first > ( *emplaced.first ).second.first )
+					( *emplaced.first ).second.first = res.second.first;
 			}
 		}
 		result = std::move( newResult );
@@ -114,6 +127,30 @@ CValveSystem::target_valves_vector CreateTargetValvesVector( const CValveSystem:
 		result.push_back( std::move( targetValves ) );
 	}
 
+	return result;
+}
+
+std::list<current_valves> DestinationValves( const current_valves& aCurrentValves, const CValveSystem::target_valves_vector& aTargetVakvesVector )
+{
+	std::list<current_valves> result{ {} };
+	for( const auto& currentValve : aCurrentValves )
+	{
+		std::list<current_valves> newResults;
+		for( const auto& targetValve : aTargetVakvesVector[ currentValve ] )
+		{
+			for( const auto& res : result )
+			{
+				newResults.push_back( res );
+				newResults.back().insert( targetValve );
+			}
+		}
+		for( const auto& res : result )
+		{
+			newResults.push_back( res );
+			newResults.back().insert( currentValve );
+		}
+		result = std::move( newResults );
+	}
 	return result;
 }
 

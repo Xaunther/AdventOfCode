@@ -32,12 +32,13 @@ namespace
 std::size_t Part1( const std::string& aFileName )
 {
 	auto valveSystem = CreateFromFile<CValveSystem>( aFileName );
-	return valveSystem.MaxReleasedPressure( 30 );
+	return valveSystem.MaxReleasedPressure( 30, 0 );
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto valveSystem = CreateFromFile<CValveSystem>( aFileName );
+	return valveSystem.MaxReleasedPressure( 30, 1 );
 }
 
 }
