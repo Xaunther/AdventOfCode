@@ -16,8 +16,6 @@ public:
 	const unsigned int& GetFlowRate() const;
 	const target_valves& GetTargetValves() const;
 
-	unsigned int Release();
-
 private:
 	id_type mID;
 	unsigned int mFlowRate;

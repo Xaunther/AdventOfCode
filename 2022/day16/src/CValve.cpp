@@ -32,10 +32,3 @@ const CValve::target_valves& CValve::GetTargetValves() const
 {
 	return mTargetValves;
 }
-
-unsigned int CValve::Release()
-{
-	unsigned int result = mFlowRate;
-	mFlowRate = 0;
-	return result;
-}
