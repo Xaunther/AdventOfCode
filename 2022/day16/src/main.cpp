@@ -13,7 +13,7 @@ using namespace std::literals;
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
 std::size_t Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+std::size_t Part2( const std::string& aFileName );
 
 }
 
@@ -31,14 +31,12 @@ namespace
 
 std::size_t Part1( const std::string& aFileName )
 {
-	auto valveSystem = CreateFromFile<CValveSystem>( aFileName );
-	return valveSystem.MaxReleasedPressure( 30, 0 );
+	return CreateFromFile<CValveSystem>( aFileName ).MaxReleasedPressure( 30, 0 );
 }
 
-unsigned int Part2( const std::string& aFileName )
+std::size_t Part2( const std::string& aFileName )
 {
-	auto valveSystem = CreateFromFile<CValveSystem>( aFileName );
-	return valveSystem.MaxReleasedPressure( 30, 1 );
+	return CreateFromFile<CValveSystem>( aFileName ).MaxReleasedPressure( 30, 1 );
 }
 
 }

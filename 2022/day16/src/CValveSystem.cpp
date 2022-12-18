@@ -49,19 +49,6 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes, con
 
 	for( unsigned int minute = 0; minute < aMinutes - 4 * aElephantCount; ++minute )
 	{
-		std::cout << minute << std::endl;
-		/*for( const auto& res : result )
-		{
-			std::cout << "Current valves (" << res.first.first.size() << "): ";
-			for( const auto& v : res.first.first )
-				std::cout << v << ", ";
-			std::cout << std::endl << "Open valves: ";
-			for( const auto& v : res.first.second )
-				std::cout << v << ", ";
-			std::cout << std::endl << "Score: " << res.second.first << std::endl;
-			std::cout << "Rate: " << res.second.second << std::endl;
-		}*/
-		// Update release per minute
 		for( auto& res : result )
 			res.second.first += res.second.second;
 		auto newResult = result;
@@ -89,14 +76,6 @@ std::size_t CValveSystem::MaxReleasedPressure( const unsigned int& aMinutes, con
 					if( !emplaced.second && res.second.first > ( *emplaced.first ).second.first )
 						( *emplaced.first ).second.first = res.second.first;
 				}
-			}
-			else if( res.first.first != startValveIndexes )
-			{
-				auto newState = res.first;
-				newState.first = startValveIndexes;
-				auto emplaced = newResult.emplace( std::move( newState ), res.second );
-				if( !emplaced.second && res.second.first > ( *emplaced.first ).second.first )
-					( *emplaced.first ).second.first = res.second.first;
 			}
 		}
 		result = std::move( newResult );
