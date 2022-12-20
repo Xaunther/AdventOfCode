@@ -14,6 +14,9 @@ public:
 
 	const positions& GetPositions() const;
 
+	std::size_t CalculateSurfaceArea( const positions& aTrappedAirPositions = {} ) const;
+	std::size_t CalculateExternalSurfaceArea() const;
+
 private:
 	positions mCubes;
 };
