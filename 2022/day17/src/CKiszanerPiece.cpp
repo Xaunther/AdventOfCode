@@ -15,7 +15,7 @@ const std::size_t& CKiszanerPiece::GetRightmostPosition() const
 	return GetLeftmostPosition();
 }
 
-CKiszanerPiece::positions CKiszanerPiece::CalculateInitialPosition( const unsigned int& aFloor ) const
+CKiszanerPiece::positions CKiszanerPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();
 	for( unsigned int i = 0; i < result.size(); ++i )

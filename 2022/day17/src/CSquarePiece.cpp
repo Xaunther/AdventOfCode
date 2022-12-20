@@ -15,7 +15,7 @@ const std::size_t& CSquarePiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
-CSquarePiece::positions CSquarePiece::CalculateInitialPosition( const unsigned int& aFloor ) const
+CSquarePiece::positions CSquarePiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();
 	for( unsigned int i = 0; i < 2; ++i )

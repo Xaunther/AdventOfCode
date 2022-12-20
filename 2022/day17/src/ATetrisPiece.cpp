@@ -29,7 +29,7 @@ void ATetrisPiece::MoveDown()
 		--position.second;
 }
 
-void ATetrisPiece::MoveUp( const unsigned int& aYCount )
+void ATetrisPiece::MoveUp( const std::size_t& aYCount )
 {
 	for( auto& position : mPositions )
 		position.second += aYCount;
@@ -59,7 +59,7 @@ ATetrisPiece::positions ATetrisPiece::ProjectDownPositions()const
 	return result;
 }
 
-void ATetrisPiece::SetInitialPosition( const unsigned int& aFloor )
+void ATetrisPiece::SetInitialPosition( const std::size_t& aFloor )
 {
 	mPositions = this->CalculateInitialPosition( aFloor );
 }

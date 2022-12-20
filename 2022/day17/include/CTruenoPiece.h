@@ -11,5 +11,5 @@ public:
 	const std::size_t& GetRightmostPosition() const override;
 
 private:
-	positions CalculateInitialPosition( const unsigned int& aFloor ) const override;
+	positions CalculateInitialPosition( const std::size_t& aFloor ) const override;
 };

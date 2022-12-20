@@ -15,7 +15,7 @@ const std::size_t& CHorizontalPiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
-CHorizontalPiece::positions CHorizontalPiece::CalculateInitialPosition( const unsigned int& aFloor ) const
+CHorizontalPiece::positions CHorizontalPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();
 	for( unsigned int i = 0; i < result.size(); ++i )

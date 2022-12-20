@@ -15,7 +15,7 @@ const std::size_t& CCornerPiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
-CCornerPiece::positions CCornerPiece::CalculateInitialPosition( const unsigned int& aFloor ) const
+CCornerPiece::positions CCornerPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();
 	for( unsigned int i = 0; i < 3; ++i )

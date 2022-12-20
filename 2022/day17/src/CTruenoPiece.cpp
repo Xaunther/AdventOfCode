@@ -15,7 +15,7 @@ const std::size_t& CTruenoPiece::GetRightmostPosition() const
 	return GetPositions()[ 3 ].first;
 }
 
-CTruenoPiece::positions CTruenoPiece::CalculateInitialPosition( const unsigned int& aFloor ) const
+CTruenoPiece::positions CTruenoPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();
 	result.front() = { 4, aFloor + 6 };

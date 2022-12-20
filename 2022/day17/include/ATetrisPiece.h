@@ -20,16 +20,16 @@ public:
 	void MoveLeft();
 	void MoveRight();
 	void MoveDown();
-	void MoveUp( const unsigned int& aYCount );
+	void MoveUp( const std::size_t& aYCount );
 
 	positions ProjectLeftPositions() const;
 	positions ProjectRightPositions() const;
 	positions ProjectDownPositions() const;
 
-	virtual void SetInitialPosition( const unsigned int& aFloor );
+	void SetInitialPosition( const std::size_t& aFloor );
 
 private:
-	virtual positions CalculateInitialPosition( const unsigned int& aFloor ) const = 0;
+	virtual positions CalculateInitialPosition( const std::size_t& aFloor ) const = 0;
 
 private:
 	positions mPositions;
