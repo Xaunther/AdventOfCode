@@ -15,6 +15,16 @@ const std::size_t& CCornerPiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
+const std::size_t& CCornerPiece::GetTopPosition() const
+{
+	return GetPositions().back().second;
+}
+
+const std::size_t& CCornerPiece::GetBottomPosition() const
+{
+	return GetPositions().front().second;
+}
+
 CCornerPiece::positions CCornerPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

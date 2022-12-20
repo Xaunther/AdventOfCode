@@ -15,6 +15,16 @@ const std::size_t& CSquarePiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
+const std::size_t& CSquarePiece::GetTopPosition() const
+{
+	return GetPositions().back().second;
+}
+
+const std::size_t& CSquarePiece::GetBottomPosition() const
+{
+	return GetPositions().front().second;
+}
+
 CSquarePiece::positions CSquarePiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

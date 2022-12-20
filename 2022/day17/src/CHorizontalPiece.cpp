@@ -15,6 +15,16 @@ const std::size_t& CHorizontalPiece::GetRightmostPosition() const
 	return GetPositions().back().first;
 }
 
+const std::size_t& CHorizontalPiece::GetTopPosition() const
+{
+	return GetPositions().front().second;
+}
+
+const std::size_t& CHorizontalPiece::GetBottomPosition() const
+{
+	return GetPositions().front().second;
+}
+
 CHorizontalPiece::positions CHorizontalPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

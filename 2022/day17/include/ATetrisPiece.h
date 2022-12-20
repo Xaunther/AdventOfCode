@@ -16,6 +16,8 @@ public:
 
 	virtual const std::size_t& GetLeftmostPosition() const = 0;
 	virtual const std::size_t& GetRightmostPosition() const = 0;
+	virtual const std::size_t& GetTopPosition() const = 0;
+	virtual const std::size_t& GetBottomPosition() const = 0;
 
 	void MoveLeft();
 	void MoveRight();
