@@ -25,6 +25,36 @@ const std::size_t& CTruenoPiece::GetBottomPosition() const
 	return GetPositions().back().second;
 }
 
+CTruenoPiece::positions CTruenoPiece::ProjectLeftPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetLeftmostPosition(), GetTopPosition() );
+	result.emplace_back( GetLeftmostPosition() - 1, GetBottomPosition() + 1 );
+	result.emplace_back( GetLeftmostPosition(), GetBottomPosition() );
+	return result;
+}
+
+CTruenoPiece::positions CTruenoPiece::ProjectRightPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetRightmostPosition(), GetTopPosition() );
+	result.emplace_back( GetRightmostPosition() + 1, GetBottomPosition() + 1 );
+	result.emplace_back( GetRightmostPosition(), GetBottomPosition() );
+	return result;
+}
+
+CTruenoPiece::positions CTruenoPiece::ProjectDownPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetLeftmostPosition(), GetBottomPosition() );
+	result.emplace_back( GetLeftmostPosition() + 1, GetBottomPosition() - 1 );
+	result.emplace_back( GetRightmostPosition(), GetBottomPosition() );
+	return result;
+}
+
 CTruenoPiece::positions CTruenoPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

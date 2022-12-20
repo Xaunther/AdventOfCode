@@ -27,8 +27,11 @@ public:
 	const CWinds::winds& GetWinds() const;
 	std::size_t GetHeight() const;
 
+	void Reset();
+
 private:
 	void AddPieceToRocks( const ATetrisPiece& aPiece );
+	bool RemoveUnreachableLayers();
 
 	CHorizontalPiece mHorizontalPiece;
 	CTruenoPiece mTruenoPiece;

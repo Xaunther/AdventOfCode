@@ -25,6 +25,14 @@ const std::size_t& CKiszanerPiece::GetBottomPosition() const
 	return GetPositions().front().second;
 }
 
+CKiszanerPiece::positions CKiszanerPiece::ProjectDownPositions() const
+{
+	positions result;
+	result.reserve( 1 );
+	result.emplace_back( GetLeftmostPosition(), GetBottomPosition() - 1 );
+	return result;
+}
+
 CKiszanerPiece::positions CKiszanerPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

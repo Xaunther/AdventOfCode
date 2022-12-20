@@ -36,7 +36,7 @@ std::size_t Part1( const std::string& aFileName )
 
 std::size_t Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	return CTetrisGame{ CreateFromFile<CWinds>( aFileName ), 1000000000000 }.GetHeight();
 }
 
 }

@@ -25,6 +25,36 @@ const std::size_t& CCornerPiece::GetBottomPosition() const
 	return GetPositions().front().second;
 }
 
+CCornerPiece::positions CCornerPiece::ProjectLeftPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetLeftmostPosition() - 1, GetBottomPosition() );
+	result.emplace_back( GetRightmostPosition() - 1, GetBottomPosition() + 1 );
+	result.emplace_back( GetRightmostPosition() - 1, GetTopPosition() );
+	return result;
+}
+
+CCornerPiece::positions CCornerPiece::ProjectRightPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetRightmostPosition() + 1, GetBottomPosition() );
+	result.emplace_back( GetRightmostPosition() + 1, GetBottomPosition() + 1 );
+	result.emplace_back( GetRightmostPosition() + 1, GetTopPosition() );
+	return result;
+}
+
+CCornerPiece::positions CCornerPiece::ProjectDownPositions() const
+{
+	positions result;
+	result.reserve( 3 );
+	result.emplace_back( GetLeftmostPosition(), GetBottomPosition() - 1 );
+	result.emplace_back( GetLeftmostPosition() + 1, GetBottomPosition() - 1 );
+	result.emplace_back( GetRightmostPosition(), GetBottomPosition() - 1 );
+	return result;
+}
+
 CCornerPiece::positions CCornerPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

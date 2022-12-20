@@ -25,6 +25,22 @@ const std::size_t& CHorizontalPiece::GetBottomPosition() const
 	return GetPositions().front().second;
 }
 
+CHorizontalPiece::positions CHorizontalPiece::ProjectLeftPositions() const
+{
+	positions result;
+	result.reserve( 1 );
+	result.emplace_back( GetLeftmostPosition() - 1, GetBottomPosition() );
+	return result;
+}
+
+CHorizontalPiece::positions CHorizontalPiece::ProjectRightPositions() const
+{
+	positions result;
+	result.reserve( 1 );
+	result.emplace_back( GetRightmostPosition() + 1, GetBottomPosition() );
+	return result;
+}
+
 CHorizontalPiece::positions CHorizontalPiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

@@ -25,6 +25,33 @@ const std::size_t& CSquarePiece::GetBottomPosition() const
 	return GetPositions().front().second;
 }
 
+CSquarePiece::positions CSquarePiece::ProjectLeftPositions() const
+{
+	positions result;
+	result.reserve( 2 );
+	result.emplace_back( GetLeftmostPosition() - 1, GetTopPosition() );
+	result.emplace_back( GetLeftmostPosition() - 1, GetBottomPosition() );
+	return result;
+}
+
+CSquarePiece::positions CSquarePiece::ProjectRightPositions() const
+{
+	positions result;
+	result.reserve( 2 );
+	result.emplace_back( GetRightmostPosition() + 1, GetTopPosition() );
+	result.emplace_back( GetRightmostPosition() + 1, GetBottomPosition() );
+	return result;
+}
+
+CSquarePiece::positions CSquarePiece::ProjectDownPositions() const
+{
+	positions result;
+	result.reserve( 2 );
+	result.emplace_back( GetLeftmostPosition(), GetBottomPosition() - 1 );
+	result.emplace_back( GetRightmostPosition(), GetBottomPosition() - 1 );
+	return result;
+}
+
 CSquarePiece::positions CSquarePiece::CalculateInitialPosition( const std::size_t& aFloor ) const
 {
 	auto result = GetPositions();

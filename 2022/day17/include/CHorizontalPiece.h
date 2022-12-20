@@ -12,6 +12,9 @@ public:
 	const std::size_t& GetTopPosition() const override;
 	const std::size_t& GetBottomPosition() const override;
 
+	positions ProjectLeftPositions() const override;
+	positions ProjectRightPositions() const override;
+
 private:
 	positions CalculateInitialPosition( const std::size_t& aFloor ) const override;
 };

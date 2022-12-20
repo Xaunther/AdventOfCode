@@ -24,9 +24,9 @@ public:
 	void MoveDown();
 	void MoveUp( const std::size_t& aYCount );
 
-	positions ProjectLeftPositions() const;
-	positions ProjectRightPositions() const;
-	positions ProjectDownPositions() const;
+	virtual positions ProjectLeftPositions() const;
+	virtual positions ProjectRightPositions() const;
+	virtual positions ProjectDownPositions() const;
 
 	void SetInitialPosition( const std::size_t& aFloor );
 
