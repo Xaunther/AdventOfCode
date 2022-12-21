@@ -2,14 +2,18 @@
 
 #include <iostream>
 
-namespace
+int CalculateDestination( const long long& aNumber, const int& aInitialPos, const std::size_t& aSize )
 {
-
-unsigned int CalculateDestination( const int& aNumber, int aPos, const unsigned int& aSize );
-
+	long long result{ aInitialPos };
+	result += aNumber;
+	if( result < 0 )
+		do { result += aSize; } while( result < 0 );
+	else
+		result = result % aSize;
+	return static_cast< int >( result );
 }
 
-void Rearrange( std::list<int>& aNumbers )
+void Rearrange( std::list<long long>& aNumbers )
 {
 	std::list<bool> moved( aNumbers.size(), false );
 
@@ -19,11 +23,10 @@ void Rearrange( std::list<int>& aNumbers )
 		const auto& numberValue = *numberIt;
 		const auto& nextMovedIt = std::find( std::next( movedIt ), moved.end(), false );
 		const auto& nextNumberIt = std::next( numberIt, std::distance( movedIt, nextMovedIt ) );
-		const auto& currentPos = static_cast< unsigned int >( std::distance( aNumbers.begin(), numberIt ) );
-		const auto& destination = CalculateDestination( numberValue, currentPos,
-			static_cast< unsigned int >( aNumbers.size() - 1 ) );
-		const auto& destinationNumberIt = std::next( numberIt, static_cast< int >( destination ) - static_cast< int >( currentPos ) + ( destination > currentPos ? 1 : 0 ) );
-		const auto& destinationMovedIt = std::next( movedIt, static_cast< int >( destination ) - static_cast< int >( currentPos ) + ( destination > currentPos ? 1 : 0 ) );
+		const auto& currentPos = static_cast< int >( std::distance( aNumbers.begin(), numberIt ) );
+		const auto& destination = CalculateDestination( numberValue, currentPos, aNumbers.size() - 1 );
+		const auto& destinationNumberIt = std::next( numberIt, destination - currentPos + ( destination > currentPos ? 1 : 0 ) );
+		const auto& destinationMovedIt = std::next( movedIt, destination - currentPos + ( destination > currentPos ? 1 : 0 ) );
 
 		*movedIt = true;
 		if( destinationNumberIt != numberIt )
@@ -35,19 +38,4 @@ void Rearrange( std::list<int>& aNumbers )
 		numberIt = nextNumberIt;
 		movedIt = nextMovedIt;
 	}
-}
-
-namespace
-{
-
-unsigned int CalculateDestination( const int& aNumber, int aPos, const unsigned int& aSize )
-{
-	aPos += aNumber;
-	if( aPos < 0 )
-		do { aPos += aSize; } while( aPos < 0 );
-	else
-		aPos = aPos % aSize;
-	return aPos;
-}
-
 }

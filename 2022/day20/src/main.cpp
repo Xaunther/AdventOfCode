@@ -12,15 +12,15 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
-unsigned int Part2( const std::string& aFileName );
+long long Part1( const std::string& aFileName );
+long long Part2( const std::string& aFileName );
 
 }
 
 int main()
 {
 	std::cout << "Part 1 example: " << Part1( EXAMPLE_FILE_NAME ) << std::endl;
-	//std::cout << "Part 1 solution: " << Part1( INPUT_FILE_NAME ) << std::endl;
+	std::cout << "Part 1 solution: " << Part1( INPUT_FILE_NAME ) << std::endl;
 	//std::cout << "Part 2 example: " << Part2( EXAMPLE_FILE_NAME ) << std::endl;
 	//std::cout << "Part 2 solution: " << Part2( INPUT_FILE_NAME ) << std::endl;
 	return 0;
@@ -29,16 +29,20 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+long long Part1( const std::string& aFileName )
 {
-	auto numbers = CreateUnorderedContainerFromFile<std::list<int>>( aFileName );
+	auto numbers = CreateUnorderedContainerFromFile<std::list<long long>>( aFileName );
 	Rearrange( numbers );
-	return static_cast< unsigned int >( numbers.size() );
+	long long result{ 0 };
+	int pos0 = static_cast< int >( std::distance( numbers.begin(), std::ranges::find( numbers, 0 ) ) );
+	for( const auto& N : { 1000,2000,3000 } )
+		result += *std::next( numbers.cbegin(), CalculateDestination( N, pos0, static_cast< int >( numbers.size() ) ) );
+	return result;
 }
 
-unsigned int Part2( const std::string& aFileName )
+long long Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	return static_cast< long long >( aFileName.size() );
 }
 
 }
