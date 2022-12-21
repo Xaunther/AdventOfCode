@@ -3,6 +3,7 @@
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "MonkeyUtils.h"
 
 namespace
 {
@@ -11,7 +12,7 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
+long long Part1( const std::string& aFileName );
 unsigned int Part2( const std::string& aFileName );
 
 }
@@ -28,9 +29,10 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+long long Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto monkeys = CreateUnorderedContainerFromFile<std::list<CMonkey>>( aFileName );
+	return CalculateMonkeyNumber( monkeys, "root" );
 }
 
 unsigned int Part2( const std::string& aFileName )
