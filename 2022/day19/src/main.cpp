@@ -5,6 +5,7 @@
 #include "day.h"
 #include "FileUtils.h"
 #include "CBlueprint.h"
+#include "MaxGeodesMined.h"
 
 namespace
 {
@@ -32,13 +33,21 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	const auto& blueprints = CreateUnorderedContainerFromFile<std::list<CBlueprint>>( aFileName );
-	return static_cast< unsigned int >( blueprints.size() );
+	unsigned int result{ 0 };
+	unsigned int index{ 1 };
+	for( const auto& blueprint : CreateUnorderedContainerFromFile<std::list<CBlueprint>>( aFileName ) )
+		result += ( index++ ) * MaxGeodesMined( blueprint, 24 );
+	return result;
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& blueprints = CreateUnorderedContainerFromFile<std::list<CBlueprint>>( aFileName );
+	unsigned int result{ 1 };
+	auto blueprintIt = blueprints.cbegin();
+	for( int i = 0; i < 3 && blueprintIt != blueprints.cend(); ++i, ++blueprintIt )
+		result *= MaxGeodesMined( *blueprintIt, 32 );
+	return result;
 }
 
 }
