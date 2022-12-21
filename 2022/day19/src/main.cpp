@@ -1,8 +1,10 @@
 #include <iostream>
+#include <list>
 
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "CBlueprint.h"
 
 namespace
 {
@@ -30,7 +32,8 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	const auto& blueprints = CreateUnorderedContainerFromFile<std::list<CBlueprint>>( aFileName );
+	return static_cast< unsigned int >( blueprints.size() );
 }
 
 unsigned int Part2( const std::string& aFileName )
