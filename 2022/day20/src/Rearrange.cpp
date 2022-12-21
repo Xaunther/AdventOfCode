@@ -1,41 +1,43 @@
 #include "Rearrange.h"
 
 #include <iostream>
+#include <numeric>
 
 int CalculateDestination( const long long& aNumber, const int& aInitialPos, const std::size_t& aSize )
 {
 	long long result{ aInitialPos };
 	result += aNumber;
 	if( result < 0 )
-		do { result += aSize; } while( result < 0 );
+		result = result % static_cast< long long >( aSize ) + aSize;
 	else
 		result = result % aSize;
 	return static_cast< int >( result );
 }
 
-void Rearrange( std::list<long long>& aNumbers )
+void Rearrange( std::list<long long>& aNumbers, const unsigned int& aN )
 {
-	std::list<bool> moved( aNumbers.size(), false );
+	std::list<int> moved( aNumbers.size(), 0 );
+	std::iota( moved.begin(), moved.end(), 0 );
 
-	auto movedIt = moved.begin();
-	for( auto numberIt = aNumbers.begin(); numberIt != aNumbers.end(); )
+	for( unsigned int i = 0; i < aN; ++i )
 	{
-		const auto& numberValue = *numberIt;
-		const auto& nextMovedIt = std::find( std::next( movedIt ), moved.end(), false );
-		const auto& nextNumberIt = std::next( numberIt, std::distance( movedIt, nextMovedIt ) );
-		const auto& currentPos = static_cast< int >( std::distance( aNumbers.begin(), numberIt ) );
-		const auto& destination = CalculateDestination( numberValue, currentPos, aNumbers.size() - 1 );
-		const auto& destinationNumberIt = std::next( numberIt, destination - currentPos + ( destination > currentPos ? 1 : 0 ) );
-		const auto& destinationMovedIt = std::next( movedIt, destination - currentPos + ( destination > currentPos ? 1 : 0 ) );
-
-		*movedIt = true;
-		if( destinationNumberIt != numberIt )
+		for( auto movedIndex = 0; movedIndex < moved.size(); ++movedIndex )
 		{
-			//Perform extraction
-			aNumbers.splice( destinationNumberIt, aNumbers, numberIt );
-			moved.splice( destinationMovedIt, moved, movedIt );
+			const auto& movedIt = std::ranges::find( moved, movedIndex );
+			const auto& numberIt = std::next( aNumbers.begin(), std::distance( moved.begin(), movedIt ) );
+			const auto& currentPos = static_cast< int >( std::distance( aNumbers.begin(), numberIt ) );
+			const auto& destination = CalculateDestination( *numberIt, currentPos, aNumbers.size() - 1 );
+
+			if( currentPos != destination )
+			{
+				//Perform extraction
+				std::list<long long> tmp;
+				std::list<int> tmp2;
+				tmp.splice( tmp.cbegin(), aNumbers, numberIt );
+				tmp2.splice( tmp2.cbegin(), moved, movedIt );
+				aNumbers.splice( std::next( aNumbers.begin(), destination ), tmp );
+				moved.splice( std::next( moved.begin(), destination ), tmp2 );
+			}
 		}
-		numberIt = nextNumberIt;
-		movedIt = nextMovedIt;
 	}
 }
