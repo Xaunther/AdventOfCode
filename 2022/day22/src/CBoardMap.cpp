@@ -21,6 +21,7 @@ struct CPlayerState
 	explicit CPlayerState( const CBoardMap::board_map& aBoardMap );
 
 	void ExecuteInstruction( const CBoardMap::board_map& aBoardMap, const CBoardMap::instruction& aInstruction );
+	void ExecuteInstruction( const CBoardMap::board_map& aBoardMap, const CBoardMap::instruction& aInstruction, const CBoardMap::cube_map& aCubeMap );
 
 private:
 	CBoardMap::position NextRow( const CBoardMap::board_map& aBoardMap ) const;
@@ -71,6 +72,18 @@ std::size_t CBoardMap::FinalPassword() const
 
 	for( const auto& inst : mInstructions )
 		playerState.ExecuteInstruction( GetBoardMap(), inst );
+
+	return 1000 * static_cast< std::size_t >( playerState.mRowPosition + 1 )
+		+ 4 * static_cast< std::size_t >( playerState.mColPosition + 1 )
+		+ static_cast< std::size_t >( playerState.mDirection );
+}
+
+std::size_t CBoardMap::FinalPassword2() const
+{
+	CPlayerState playerState{ GetBoardMap() };
+
+	for( const auto& inst : mInstructions )
+		playerState.ExecuteInstruction( GetBoardMap(), inst, GetCubeMap() );
 
 	return 1000 * static_cast< std::size_t >( playerState.mRowPosition + 1 )
 		+ 4 * static_cast< std::size_t >( playerState.mColPosition + 1 )
@@ -184,21 +197,162 @@ CBoardMap::cube_map CreateCubeMap( const CBoardMap::board_map& aBoardMap )
 		rowIndex += length;
 	}
 
-	std::cout << sideMap.size() << std::endl;
-
-	for( const auto& side : sideMap )
+	// We have the orientation for each side, now we just scan all the edges and fill in the result map
+	CBoardMap::cube_map result;
+	// Top-edges
 	{
-		std::cout << side.first.first << ", " << side.first.second << " : {";
-		for( const auto& v : side.second.first )
-			std::cout << v << ", ";
-		std::cout << "} , {";
-		for( const auto& v : side.second.second )
-			std::cout << v << ", ";
-		std::cout << "}" << std::endl;;
+		const auto& edgeDirection = CBoardMap::EDirection::UP;
+		for( const auto& side : sideMap )
+		{
+			s = side.second.first;
+			d = side.second.second;
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			if( side.first.first == 0 || !sideMap.contains( std::make_pair( static_cast< CBoardMap::position >( side.first.first - length ), side.first.second ) ) )
+			{
+				const auto& targetSide = *std::ranges::find_if( sideMap, [ &s ]( auto&& side ) { return side.second.first == s; } );
+				const auto& targetDirection = d == targetSide.second.second ? CBoardMap::EDirection::UP :
+					Flip( d ) == targetSide.second.second ? CBoardMap::EDirection::DOWN :
+					VecProd( d, targetSide.second.first ) == targetSide.second.second ? CBoardMap::EDirection::LEFT :
+					CBoardMap::EDirection::RIGHT;
+				if( targetDirection == CBoardMap::EDirection::UP )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( side.first.first, static_cast< CBoardMap::position >( side.first.second + i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 ), static_cast< CBoardMap::position >( targetSide.first.second + i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::DOWN )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( side.first.first, static_cast< CBoardMap::position >( side.first.second + i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( targetSide.first.first, static_cast< CBoardMap::position >( targetSide.first.second + length - 1 - i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::LEFT )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( side.first.first, static_cast< CBoardMap::position >( side.first.second + i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 - i ), static_cast< CBoardMap::position >( targetSide.first.second + length - 1 ) ), targetDirection ) );
+				else
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( side.first.first, static_cast< CBoardMap::position >( side.first.second + i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + i ), targetSide.first.second ), targetDirection ) );
+			}
+		}
+	}
+	// Right-edges
+	{
+		const auto& edgeDirection = CBoardMap::EDirection::RIGHT;
+		for( const auto& side : sideMap )
+		{
+			s = side.second.first;
+			d = VecProd( side.second.second, s );
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			if( !sideMap.contains( std::make_pair( static_cast< CBoardMap::position >( side.first.first ), static_cast< CBoardMap::position >( side.first.second + length ) ) ) )
+			{
+				const auto& targetSide = *std::ranges::find_if( sideMap, [ &s ]( auto&& side ) { return side.second.first == s; } );
+				const auto& targetDirection = d == targetSide.second.second ? CBoardMap::EDirection::UP :
+					Flip( d ) == targetSide.second.second ? CBoardMap::EDirection::DOWN :
+					VecProd( d, targetSide.second.first ) == targetSide.second.second ? CBoardMap::EDirection::LEFT :
+					CBoardMap::EDirection::RIGHT;
+				if( targetDirection == CBoardMap::EDirection::UP )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + i ), static_cast< CBoardMap::position >( side.first.second + length - 1 ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 ), static_cast< CBoardMap::position >( targetSide.first.second + i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::DOWN )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + i ), static_cast< CBoardMap::position >( side.first.second + length - 1 ) ), edgeDirection ),
+							std::make_pair( std::make_pair( targetSide.first.first, static_cast< CBoardMap::position >( targetSide.first.second + length - 1 - i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::LEFT )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + i ), static_cast< CBoardMap::position >( side.first.second + length - 1 ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 - i ), static_cast< CBoardMap::position >( targetSide.first.second + length - 1 ) ), targetDirection ) );
+				else
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + i ), static_cast< CBoardMap::position >( side.first.second + length - 1 ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + i ), targetSide.first.second ), targetDirection ) );
+			}
+		}
+	}
+	// Left-edges
+	{
+		const auto& edgeDirection = CBoardMap::EDirection::LEFT;
+		for( const auto& side : sideMap )
+		{
+			s = side.second.first;
+			d = Flip( VecProd( side.second.second, s ) );
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			if( side.first.second == 0 || !sideMap.contains( std::make_pair( static_cast< CBoardMap::position >( side.first.first ), static_cast< CBoardMap::position >( side.first.second - length ) ) ) )
+			{
+				const auto& targetSide = *std::ranges::find_if( sideMap, [ &s ]( auto&& side ) { return side.second.first == s; } );
+				const auto& targetDirection = d == targetSide.second.second ? CBoardMap::EDirection::UP :
+					Flip( d ) == targetSide.second.second ? CBoardMap::EDirection::DOWN :
+					VecProd( d, targetSide.second.first ) == targetSide.second.second ? CBoardMap::EDirection::LEFT :
+					CBoardMap::EDirection::RIGHT;
+				if( targetDirection == CBoardMap::EDirection::UP )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 - i ), static_cast< CBoardMap::position >( side.first.second ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 ), static_cast< CBoardMap::position >( targetSide.first.second + i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::DOWN )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 - i ), static_cast< CBoardMap::position >( side.first.second ) ), edgeDirection ),
+							std::make_pair( std::make_pair( targetSide.first.first, static_cast< CBoardMap::position >( targetSide.first.second + length - 1 - i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::LEFT )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 - i ), static_cast< CBoardMap::position >( side.first.second ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 - i ), static_cast< CBoardMap::position >( targetSide.first.second + length - 1 ) ), targetDirection ) );
+				else
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 - i ), static_cast< CBoardMap::position >( side.first.second ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + i ), targetSide.first.second ), targetDirection ) );
+			}
+		}
 	}
 
+	// Bottom-edges
+	{
+		const auto& edgeDirection = CBoardMap::EDirection::DOWN;
+		for( const auto& side : sideMap )
+		{
+			s = side.second.first;
+			d = Flip( side.second.second );
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			if( !sideMap.contains( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length ), static_cast< CBoardMap::position >( side.first.second ) ) ) )
+			{
+				const auto& targetSide = *std::ranges::find_if( sideMap, [ &s ]( auto&& side ) { return side.second.first == s; } );
+				const auto& targetDirection = d == targetSide.second.second ? CBoardMap::EDirection::UP :
+					Flip( d ) == targetSide.second.second ? CBoardMap::EDirection::DOWN :
+					VecProd( d, targetSide.second.first ) == targetSide.second.second ? CBoardMap::EDirection::LEFT :
+					CBoardMap::EDirection::RIGHT;
+				if( targetDirection == CBoardMap::EDirection::UP )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 ), static_cast< CBoardMap::position >( side.first.second + length - 1 - i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 ), static_cast< CBoardMap::position >( targetSide.first.second + i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::DOWN )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 ), static_cast< CBoardMap::position >( side.first.second + length - 1 - i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( targetSide.first.first, static_cast< CBoardMap::position >( targetSide.first.second + length - 1 - i ) ), targetDirection ) );
+				else if( targetDirection == CBoardMap::EDirection::LEFT )
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 ), static_cast< CBoardMap::position >( side.first.second + length - 1 - i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + length - 1 - i ), static_cast< CBoardMap::position >( targetSide.first.second + length - 1 ) ), targetDirection ) );
+				else
+					for( CBoardMap::position i = 0; i < length; ++i )
+						result.emplace( std::make_pair( std::make_pair( static_cast< CBoardMap::position >( side.first.first + length - 1 ), static_cast< CBoardMap::position >( side.first.second + length - 1 - i ) ), edgeDirection ),
+							std::make_pair( std::make_pair( static_cast< CBoardMap::position >( targetSide.first.first + i ), targetSide.first.second ), targetDirection ) );
+			}
+		}
+	}
 
-	CBoardMap::cube_map result;
 	return result;
 }
 
@@ -275,6 +429,93 @@ void CPlayerState::ExecuteInstruction( const CBoardMap::board_map& aBoardMap, co
 		}
 		break;
 	}
+	}
+
+	//Rotation phase
+	switch( aInstruction.second )
+	{
+	case CBoardMap::EDirection::LEFT:
+	{
+		mDirection = static_cast< CBoardMap::EDirection >( ( static_cast< int >( mDirection ) + 3 ) % 4 );
+		break;
+	}
+	case CBoardMap::EDirection::RIGHT:
+	{
+		mDirection = static_cast< CBoardMap::EDirection >( ( static_cast< int >( mDirection ) + 1 ) % 4 );
+		break;
+	}
+	default: break;
+	}
+}
+
+void CPlayerState::ExecuteInstruction( const CBoardMap::board_map& aBoardMap, const CBoardMap::instruction& aInstruction, const CBoardMap::cube_map& aCubeMap )
+{
+	//Movement phase
+	for( CBoardMap::position moveCount = 0; moveCount < aInstruction.first; ++moveCount )
+	{
+		const auto& linkFound = aCubeMap.find( std::make_pair( std::make_pair( mRowPosition, mColPosition ), mDirection ) );
+		if( linkFound != aCubeMap.cend() )
+		{
+			const auto& mapRow = aBoardMap[ ( *linkFound ).second.first.first ];
+			if( mapRow.second[ ( *linkFound ).second.first.second - mapRow.first.first ] )
+				break;
+			mRowPosition = ( *linkFound ).second.first.first;
+			mColPosition = ( *linkFound ).second.first.second;
+			mDirection = ( *linkFound ).second.second;
+		}
+		else // Not an edge
+		{
+			bool hitRock{ false };
+			switch( mDirection )
+			{
+			case CBoardMap::EDirection::RIGHT:
+			{
+				const auto& mapRow = aBoardMap[ mRowPosition ];
+				if( mapRow.second[ mColPosition + 1 - mapRow.first.first ] )
+				{
+					hitRock = true;
+					break;
+				}
+				++mColPosition;
+				break;
+			}
+			case CBoardMap::EDirection::DOWN:
+			{
+				const auto& mapRow = aBoardMap[ mRowPosition + 1 ];
+				if( mapRow.second[ mColPosition - mapRow.first.first ] )
+				{
+					hitRock = true;
+					break;
+				}
+				++mRowPosition;
+				break;
+			}
+			case CBoardMap::EDirection::LEFT:
+			{
+				const auto& mapRow = aBoardMap[ mRowPosition ];
+				if( mapRow.second[ mColPosition - 1 - mapRow.first.first ] )
+				{
+					hitRock = true;
+					break;
+				}
+				--mColPosition;
+				break;
+			}
+			default:
+			{
+				const auto& mapRow = aBoardMap[ mRowPosition - 1 ];
+				if( mapRow.second[ mColPosition - mapRow.first.first ] )
+				{
+					hitRock = true;
+					break;
+				}
+				--mRowPosition;
+				break;
+			}
+			}
+			if( hitRock )
+				break;
+		}
 	}
 
 	//Rotation phase

@@ -36,7 +36,7 @@ unsigned int Part1( const std::string& aFileName )
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	return static_cast< unsigned int >( CreateFromFile<CBoardMap>( aFileName ).FinalPassword2() );
 }
 
 }

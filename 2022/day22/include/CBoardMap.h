@@ -35,6 +35,7 @@ public:
 	const cube_map& GetCubeMap() const;
 
 	std::size_t FinalPassword() const;
+	std::size_t FinalPassword2() const;
 
 private:
 	board_map mBoardMap;
