@@ -2,6 +2,7 @@
 
 #include <istream>
 #include <list>
+#include <map>
 #include <set>
 #include <vector>
 
@@ -25,14 +26,18 @@ public:
 	using instruction = std::pair<position, EDirection>;
 	using instructions = std::list<instruction>;
 
+	using cube_map = std::map<std::pair<range, EDirection>, std::pair<range, EDirection>>;
+
 	friend std::istream& operator>>( std::istream& aInput, CBoardMap& aBoardMap );
 
 	const board_map& GetBoardMap() const;
 	const instructions& GetInstructions() const;
+	const cube_map& GetCubeMap() const;
 
 	std::size_t FinalPassword() const;
 
 private:
 	board_map mBoardMap;
 	instructions mInstructions;
+	cube_map mCubeMap;
 };

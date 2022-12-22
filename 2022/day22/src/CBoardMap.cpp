@@ -1,13 +1,20 @@
 #include "CBoardMap.h"
 
+#include <array>
 #include <iostream>
 #include <string>
 
 namespace
 {
 
+using vector3D = std::array<int, 3>;
+
 CBoardMap::row CreateRow( std::string_view aLine );
 std::istream& operator>>( std::istream& aInput, CBoardMap::instructions& aInstructions );
+CBoardMap::cube_map CreateCubeMap( const CBoardMap::board_map& aBoardMap );
+
+vector3D Flip( const vector3D& aV );
+vector3D VecProd( const vector3D& aLHS, const vector3D& aRHS );
 
 struct CPlayerState
 {
@@ -39,6 +46,7 @@ std::istream& operator>>( std::istream& aInput, CBoardMap& aBoardMap )
 		std::getline( aInput, lineInput );
 	} while( lineInput != "" );
 
+	aBoardMap.mCubeMap = CreateCubeMap( aBoardMap.GetBoardMap() );
 	return aInput >> aBoardMap.mInstructions;
 }
 
@@ -50,6 +58,11 @@ const CBoardMap::board_map& CBoardMap::GetBoardMap() const
 const CBoardMap::instructions& CBoardMap::GetInstructions() const
 {
 	return mInstructions;
+}
+
+const CBoardMap::cube_map& CBoardMap::GetCubeMap() const
+{
+	return mCubeMap;
 }
 
 std::size_t CBoardMap::FinalPassword() const
@@ -91,6 +104,119 @@ std::istream& operator>>( std::istream& aInput, CBoardMap::instructions& aInstru
 
 	aInstructions.emplace_back( length, CBoardMap::EDirection::DOWN );
 	return aInput;
+}
+
+CBoardMap::cube_map CreateCubeMap( const CBoardMap::board_map& aBoardMap )
+{
+	// Calculate cube side length
+	const CBoardMap::position length = static_cast< CBoardMap::position >(
+		std::distance( aBoardMap.cbegin(), std::ranges::adjacent_find( aBoardMap,
+			[]( auto&& aLHS, auto&& aRHS ) { return aLHS.first != aRHS.first; } ) ) ) + 1;
+
+	// Compute the normal vector and the vector pointing "up" for each side
+	std::map<CBoardMap::range, std::pair<vector3D, vector3D>> sideMap;
+	vector3D s{ 0, 0, 1 };
+	vector3D d{ 0, 1, 0 };
+	//Insert first row
+	CBoardMap::position colIndex = aBoardMap[ 0 ].first.first;
+	while( colIndex < aBoardMap[ 0 ].first.second )
+	{
+		sideMap.emplace( std::make_pair( CBoardMap::position{ 0 }, colIndex ), std::make_pair( s, d ) );
+		//Go right
+		d = VecProd( d, s );
+		//Prepare side to the right of this one
+		vector3D tmp = d;
+		d = Flip( s );
+		s = tmp;
+		d = Flip( VecProd( d, s ) );
+		colIndex += length;
+	}
+
+	// Now the rest of the rows
+	CBoardMap::position rowIndex = length;
+	while( rowIndex < aBoardMap.size() )
+	{
+		//Find the block that touches with the previous row
+		for( colIndex = aBoardMap[ rowIndex ].first.first; colIndex < aBoardMap[ rowIndex - length ].first.first; colIndex += length );
+		const auto& found = ( *sideMap.find( { static_cast< CBoardMap::position >( rowIndex - length ), colIndex } ) ).second;
+		s = found.first;
+		d = Flip( found.second );
+		CBoardMap::position touchingColIndex = colIndex;
+		//Add the touching side
+		{
+			vector3D tmp = d;
+			d = Flip( s );
+			s = tmp;
+		}
+		d = Flip( d );
+		sideMap.emplace( std::make_pair( rowIndex, colIndex ), std::make_pair( s, d ) );
+		const auto dInit = d;
+		const auto sInit = s;
+		//Scan to the left
+		d = Flip( VecProd( d, s ) );
+		while( colIndex > aBoardMap[ rowIndex ].first.first )
+		{
+			//Prepare side to the left of this one
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			colIndex -= length;
+			sideMap.emplace( std::make_pair( rowIndex, colIndex ), std::make_pair( s, VecProd( d, s ) ) );
+		}
+		//Scan to the right
+		colIndex = touchingColIndex + length;
+		d = dInit;
+		s = sInit;
+		d = VecProd( d, s );
+		while( colIndex < aBoardMap[ rowIndex ].first.second )
+		{
+			//Prepare side to the right of this one
+			{
+				vector3D tmp = d;
+				d = Flip( s );
+				s = tmp;
+			}
+			sideMap.emplace( std::make_pair( rowIndex, colIndex ), std::make_pair( s, Flip( VecProd( d, s ) ) ) );
+			colIndex += length;
+		}
+		rowIndex += length;
+	}
+
+	std::cout << sideMap.size() << std::endl;
+
+	for( const auto& side : sideMap )
+	{
+		std::cout << side.first.first << ", " << side.first.second << " : {";
+		for( const auto& v : side.second.first )
+			std::cout << v << ", ";
+		std::cout << "} , {";
+		for( const auto& v : side.second.second )
+			std::cout << v << ", ";
+		std::cout << "}" << std::endl;;
+	}
+
+
+	CBoardMap::cube_map result;
+	return result;
+}
+
+vector3D Flip( const vector3D& aV )
+{
+	vector3D result;
+	for( vector3D::size_type i = 0; i < aV.size(); ++i )
+		result[ i ] = -aV[ i ];
+	return result;
+}
+
+vector3D VecProd( const vector3D& aLHS, const vector3D& aRHS )
+{
+	vector3D result;
+	result[ 0 ] = aLHS[ 1 ] * aRHS[ 2 ] - aLHS[ 2 ] * aRHS[ 1 ];
+	result[ 1 ] = -aLHS[ 0 ] * aRHS[ 2 ] + aLHS[ 2 ] * aRHS[ 0 ];
+	result[ 2 ] = aLHS[ 0 ] * aRHS[ 1 ] - aLHS[ 1 ] * aRHS[ 0 ];
+	return result;
 }
 
 CPlayerState::CPlayerState( const CBoardMap::board_map& aBoardMap ):
