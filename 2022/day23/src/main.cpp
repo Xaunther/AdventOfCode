@@ -12,7 +12,7 @@ using namespace std::literals;
 
 static const std::string INPUT_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/input.txt"s;
 static const std::string EXAMPLE_FILE_NAME = "../../../../"s + YEAR + "/"s + DAY + "/example.txt"s;
-unsigned int Part1( const std::string& aFileName );
+std::size_t Part1( const std::string& aFileName );
 unsigned int Part2( const std::string& aFileName );
 
 }
@@ -29,10 +29,11 @@ int main()
 namespace
 {
 
-unsigned int Part1( const std::string& aFileName )
+std::size_t Part1( const std::string& aFileName )
 {
 	auto elfFlock = CreateFromFile<CElfFlock>( aFileName );
-	return static_cast< unsigned int >( elfFlock.GetElvesPositions().size() );
+	elfFlock.Disperse( 10 );
+	return ( elfFlock.RectangleSize() - elfFlock.GetElvesPositions().size() );
 }
 
 unsigned int Part2( const std::string& aFileName )
