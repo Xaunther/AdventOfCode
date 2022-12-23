@@ -3,6 +3,7 @@
 #include "year.h"
 #include "day.h"
 #include "FileUtils.h"
+#include "CElfFlock.h"
 
 namespace
 {
@@ -30,7 +31,8 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto elfFlock = CreateFromFile<CElfFlock>( aFileName );
+	return static_cast< unsigned int >( elfFlock.GetElvesPositions().size() );
 }
 
 unsigned int Part2( const std::string& aFileName )
