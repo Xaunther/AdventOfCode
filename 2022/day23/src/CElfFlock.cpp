@@ -41,7 +41,7 @@ const CElfFlock::coordinates_set& CElfFlock::GetElvesPositions() const
 	return mElvesPositions;
 }
 
-void CElfFlock::Disperse( const std::optional<unsigned int>& aRounds )
+unsigned int CElfFlock::Disperse( const std::optional<unsigned int>& aRounds )
 {
 	const auto& cardinalChecks = CreateCardinalChecks();
 	const auto& nearbyChecks = CreateNearbyChecks();
@@ -84,6 +84,7 @@ void CElfFlock::Disperse( const std::optional<unsigned int>& aRounds )
 		++turn;
 	} while( ( !aRounds || turn < *aRounds ) && !elfMovements.empty() );
 
+	return static_cast< unsigned int >( turn );
 }
 
 std::size_t CElfFlock::RectangleSize() const
