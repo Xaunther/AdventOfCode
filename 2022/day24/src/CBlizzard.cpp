@@ -1,11 +1,6 @@
 #include "CBlizzard.h"
 
-namespace
-{
-
-inline CBlizzard::coordinates operator+( const CBlizzard::coordinates& aLHS, const CBlizzard::coordinates& aRHS );
-
-}
+#include "CoordinateUtils.h"
 
 CBlizzard::CBlizzard( const coordinates& aLocation, const coordinates& aDirection ):
 	mLocation( aLocation ),
@@ -21,16 +16,5 @@ const CBlizzard::coordinates& CBlizzard::GetLocation() const
 void CBlizzard::Move( coordinates& aMapSize )
 {
 	mLocation = mLocation + aMapSize + mDirection;
-	mLocation.first = mLocation.first % aMapSize.first;
-	mLocation.second = mLocation.second % aMapSize.second;
-}
-
-namespace
-{
-
-inline CBlizzard::coordinates operator+( const CBlizzard::coordinates& aLHS, const CBlizzard::coordinates& aRHS )
-{
-	return { aLHS.first + aRHS.first, aLHS.second + aRHS.second };
-}
-
+	mLocation = mLocation % aMapSize;
 }

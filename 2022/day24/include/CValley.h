@@ -14,6 +14,8 @@ public:
 	friend std::istream& operator>>( std::istream& aInput, CValley& aValley );
 	const blizzards& GetBlizzards() const;
 
+	unsigned int Traverse();
+
 private:
 	blizzards mBlizzards;
 	coordinates mSize;

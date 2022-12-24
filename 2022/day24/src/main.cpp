@@ -32,8 +32,7 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	auto valley = CreateFromFile<CValley>( aFileName );
-	return static_cast< unsigned int >( valley.GetBlizzards().size() );
+	return static_cast< unsigned int >( CreateFromFile<CValley>( aFileName ).Traverse() );
 }
 
 unsigned int Part2( const std::string& aFileName )
