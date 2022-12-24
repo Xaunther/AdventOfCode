@@ -53,10 +53,12 @@ const CValley::blizzards& CValley::GetBlizzards() const
 	return mBlizzards;
 }
 
-unsigned int CValley::Traverse()
+unsigned int CValley::Traverse( const bool aInReverse )
 {
 	std::vector<std::set<coordinates>> historicPositions( CalculateCycleSize( mSize ), std::set<coordinates>{} );
-	std::set<coordinates> currentPositions{ mStartPosition };
+	const auto& start = aInReverse ? mEndPosition : mStartPosition;
+	const auto& end = aInReverse ? mStartPosition : mEndPosition;
+	std::set<coordinates> currentPositions{ start };
 	historicPositions.front() = currentPositions;
 
 	unsigned int turns = 0;
@@ -73,10 +75,10 @@ unsigned int CValley::Traverse()
 			for( const auto& move : PossibleMovements() )
 			{
 				const auto& destination = currentPosition + move;
-				if( ( destination == mEndPosition || destination == mStartPosition || IsInside( destination, mSize ) ) &&
+				if( ( destination == end || destination == start || IsInside( destination, mSize ) ) &&
 					std::ranges::none_of( mBlizzards, [ &move, &destination ]( auto&& aBlizzard ) { return aBlizzard.GetLocation() == destination; } ) )
 				{
-					if( destination == mEndPosition )
+					if( destination == end )
 						return turns;
 					newPositions.insert( destination );
 					historicPositions[ turns % historicPositions.size() ].insert( destination );

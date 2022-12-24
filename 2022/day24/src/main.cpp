@@ -32,12 +32,17 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( CreateFromFile<CValley>( aFileName ).Traverse() );
+	return CreateFromFile<CValley>( aFileName ).Traverse();
 }
 
 unsigned int Part2( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto valley = CreateFromFile<CValley>( aFileName );
+	unsigned int result = 0;
+	result += valley.Traverse();
+	result += valley.Traverse( true );
+	result += valley.Traverse();
+	return result;
 }
 
 }
