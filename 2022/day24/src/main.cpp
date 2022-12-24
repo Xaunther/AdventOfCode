@@ -4,6 +4,8 @@
 #include "day.h"
 #include "FileUtils.h"
 
+#include "CValley.h"
+
 namespace
 {
 
@@ -30,7 +32,8 @@ namespace
 
 unsigned int Part1( const std::string& aFileName )
 {
-	return static_cast< unsigned int >( aFileName.size() );
+	auto valley = CreateFromFile<CValley>( aFileName );
+	return static_cast< unsigned int >( valley.GetBlizzards().size() );
 }
 
 unsigned int Part2( const std::string& aFileName )
